@@ -8,20 +8,27 @@ html, body {
   height: 100%;
 }
 
-/* Suavização da fonte */
 body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #f9fafb; /* fundo cinza claro */
+  background-color: #f7f7f8; /* <-- ajuste final */
+  color: #0f172a;
 }
 
-/* ==== Scrollbar invisível (usado nas categorias) ==== */
+/* Container padrão (utilidade prática) */
+.container {
+  max-width: 80rem; /* igual a max-w-6xl (≈ 1280px) */
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1.5rem; /* px-6 */
+  padding-right: 1.5rem;
+}
 
+/* Scrollbar hide (categories) */
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
-
 .scrollbar-hide {
-  -ms-overflow-style: none; /* IE/Edge */
-  scrollbar-width: none;    /* Firefox */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

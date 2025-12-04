@@ -20,6 +20,7 @@ const DUMMY = [
     votes: 564,
     category: "Design Tools",
     tags: ["Design"],
+    image: "https://via.placeholder.com/200"
   },
   {
     id: "3",
@@ -27,11 +28,10 @@ const DUMMY = [
     description: "Discover the latest songs.",
     votes: 4752,
     category: "Music",
-    tags: ["Music", "Trending"],
+    tags: ["Trending", "Audio"],
+    image: "https://via.placeholder.com/200"
   },
 ];
-
-
 
 export default function Home() {
   return (
@@ -44,26 +44,22 @@ export default function Home() {
       <Categories />
 
       {/* MAIN CONTENT */}
-      <main className="max-w-6xl mx-auto px-6 py-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <main className="container py-10 grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-        {/* LEFT SIDE — FEED */}
-        <section className="lg:col-span-2 flex flex-col gap-4">
-
-          <h2 className="text-2xl font-bold mb-2">Discover what's launching today on LaunchBox 🚀
-</h2>
-
+        {/* FEED */}
+        <section className="lg:col-span-2 flex flex-col gap-6">
+          <h1 className="text-3xl font-bold leading-tight text-gray-900">
+            Discover what's launching today on LaunchBox 🚀
+          </h1>
 
           {DUMMY.map((p) => (
             <ProductCard key={p.id} product={p} />
           ))}
-
         </section>
 
-        {/* RIGHT SIDE — SIDEBAR */}
+        {/* SIDEBAR */}
         <Sidebar />
-
       </main>
-
     </div>
   );
 }
