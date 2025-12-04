@@ -10,6 +10,8 @@ const DUMMY = [
     description: "Build a second brain for your team.",
     votes: 444,
     category: "Productivity",
+    tags: ["AI", "Team"],
+    image: "https://via.placeholder.com/200"
   },
   {
     id: "2",
@@ -17,6 +19,7 @@ const DUMMY = [
     description: "Design stunning interactive products.",
     votes: 564,
     category: "Design Tools",
+    tags: ["Design"],
   },
   {
     id: "3",
@@ -24,8 +27,10 @@ const DUMMY = [
     description: "Discover the latest songs.",
     votes: 4752,
     category: "Music",
+    tags: ["Music", "Trending"],
   },
 ];
+
 
 export default function Home() {
   return (
