@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { FiSearch } from "react-icons/fi";
-import UserMenu from "./UserMenu"; // ← IMPORT CORRETO
+import UserMenu from "./UserMenu";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
@@ -11,7 +11,7 @@ export default function Navbar() {
   return (
     <header className="bg-white border-b sticky top-0 z-50 shadow-sm">
       <div className="max-w-6xl mx-auto px-6 py-3 flex items-center justify-between">
-
+        
         {/* LOGO + NAME */}
         <Link href="/" className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-red-500 flex items-center justify-center text-white font-bold text-lg shadow-sm">
@@ -38,13 +38,16 @@ export default function Navbar() {
             />
           </div>
 
-          {/* SUBMIT BUTTON */}
-          <button className="px-4 py-2 rounded-lg bg-red-500 text-white text-sm font-medium hover:bg-red-600 active:scale-95 transition">
+          {/* SUBMIT BUTTON → agora é um Link */}
+          <Link
+            href="/submit"
+            className="px-4 py-2 rounded-lg bg-red-500 text-white text-sm font-medium hover:bg-red-600 active:scale-95 transition"
+          >
             Submit
-          </button>
+          </Link>
 
-          {/* USER MENU / LOGIN BUTTON */}
-          <UserMenu />  {/* ← AQUI ENTRA O LOGIN DO NEXTAUTH */}
+          {/* USER MENU */}
+          <UserMenu />
         </div>
 
         {/* MOBILE MENU BUTTON */}
@@ -59,7 +62,7 @@ export default function Navbar() {
       {/* MOBILE MENU */}
       {open && (
         <div className="md:hidden border-t bg-white px-6 pb-4 flex flex-col gap-3">
-
+          
           {/* SEARCH MOBILE */}
           <div className="relative">
             <FiSearch className="absolute left-3 top-3 text-gray-400 text-sm" />
@@ -73,13 +76,16 @@ export default function Navbar() {
             />
           </div>
 
-          {/* SUBMIT BUTTON MOBILE */}
-          <button className="w-full px-4 py-2 rounded-lg bg-red-500 text-white text-sm hover:bg-red-600 active:scale-95 transition">
+          {/* SUBMIT BUTTON MOBILE → agora é Link */}
+          <Link
+            href="/submit"
+            className="w-full text-center px-4 py-2 rounded-lg bg-red-500 text-white text-sm hover:bg-red-600 active:scale-95 transition"
+          >
             Submit
-          </button>
+          </Link>
 
           {/* USER MENU MOBILE */}
-          <UserMenu />  {/* ← FUNCIONA NO MOBILE TAMBÉM */}
+          <UserMenu />
         </div>
       )}
     </header>

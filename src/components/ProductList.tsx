@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
+import Link from "next/link"; // ← IMPORT NECESSÁRIO
 
 // Tipagem correta considerando makers
 type Product = {
@@ -12,7 +13,7 @@ type Product = {
   votes: { id: string; userId: string }[];
   comments: { id: string }[];
   createdAt: string;
-  user: {                     // <- AGORA EXISTE
+  user: {
     id: string;
     name: string | null;
     image: string | null;
@@ -49,7 +50,6 @@ export default function ProductList() {
     });
 
     const data = await res.json();
-
     if (!data.success) return;
 
     setProducts((prev) =>
@@ -86,31 +86,37 @@ export default function ProductList() {
 
             {/* MAKER INFO */}
             <div className="flex items-center gap-2 mt-3">
-              <img
-                src={p.user.image || "/default-avatar.png"}
-                className="w-6 h-6 rounded-full"
-                alt={p.user.name || "Maker"}
-              />
-              <span className="text-xs text-gray-500">{p.user.name}</span>
-            </div>
+              <Link href={`/user/${p.user.id}`}>
+                <img
+                  src={p.user.image || "/default-avatar.png"}
+                  alt={p.user.name || "Maker"}
+                  className="w-6 h-6 rounded-full border cursor-pointer hover:opacity-80"
+                />
+              </Link>
 
-            <div className="flex items-center gap-4 mt-3 text-sm">
-              {/* BOTÃO DE UPVOTE */}
-              <button
-                onClick={() => toggleVote(p.id)}
-                className={`px-3 py-1 rounded-lg border font-medium transition
-                  ${
-                    userHasVoted
-                      ? "bg-red-500 text-white border-red-600"
-                      : "bg-gray-100 text-gray-700 border-gray-300"
-                  }
-                `}
+              <Link
+                href={`/user/${p.user.id}`}
+                className="text-xs text-gray-600 hover:underline"
               >
-                👍 {p.votes.length}
-              </button>
-
-              <span className="text-gray-500">💬 {p.comments.length}</span>
+                {p.user.name || "Unknown"}
+              </Link>
             </div>
+
+            {/* UPVOTE BUTTON */}
+            <button
+              onClick={() => toggleVote(p.id)}
+              className={`px-3 py-1 rounded-lg border font-medium transition
+                ${
+                  userHasVoted
+                    ? "bg-red-500 text-white border-red-600"
+                    : "bg-gray-100 text-gray-700 border-gray-300"
+                }
+              `}
+            >
+              👍 {p.votes.length}
+            </button>
+
+            <span className="ml-3 text-gray-500">💬 {p.comments.length}</span>
           </div>
         );
       })}
