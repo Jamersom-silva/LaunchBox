@@ -3,6 +3,11 @@ import Categories from "@/components/Categories";
 import ProductCard from "@/components/ProductCard";
 import Sidebar from "@/components/Sidebar";
 
+import ProductList from "@/components/ProductList";
+
+
+
+
 const DUMMY = [
   {
     id: "1",

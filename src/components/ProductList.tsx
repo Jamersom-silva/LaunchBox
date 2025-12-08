@@ -1,0 +1,119 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
+
+// Tipagem correta considerando makers
+type Product = {
+  id: string;
+  name: string;
+  slogan: string;
+  image: string | null;
+  votes: { id: string; userId: string }[];
+  comments: { id: string }[];
+  createdAt: string;
+  user: {                     // <- AGORA EXISTE
+    id: string;
+    name: string | null;
+    image: string | null;
+  };
+};
+
+export default function ProductList() {
+  const { data: session } = useSession();
+
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function load() {
+      const res = await fetch("/api/products");
+      const data = await res.json();
+      setProducts(data);
+      setLoading(false);
+    }
+    load();
+  }, []);
+
+  // -----------------------------------
+  // Toggle Upvote
+  // -----------------------------------
+  async function toggleVote(productId: string) {
+    if (!session) {
+      alert("You must be logged in to vote.");
+      return;
+    }
+
+    const res = await fetch(`/api/products/${productId}/vote`, {
+      method: "POST",
+    });
+
+    const data = await res.json();
+
+    if (!data.success) return;
+
+    setProducts((prev) =>
+      prev.map((p) =>
+        p.id === productId
+          ? {
+              ...p,
+              votes: Array.from({ length: data.votesCount }).map((_, i) => ({
+                id: `${p.id}-v${i}`,
+                userId: i === 0 ? session.user.id : "other",
+              })),
+            }
+          : p
+      )
+    );
+  }
+
+  if (loading) return <p>Loading...</p>;
+
+  return (
+    <div className="grid gap-4 mt-6">
+      {products.map((p) => {
+        const userHasVoted = p.votes.some(
+          (v) => v.userId === session?.user?.id
+        );
+
+        return (
+          <div
+            key={p.id}
+            className="p-4 bg-white rounded shadow hover:shadow-md transition border"
+          >
+            <h3 className="font-bold text-lg">{p.name}</h3>
+            <p className="text-sm text-gray-600">{p.slogan}</p>
+
+            {/* MAKER INFO */}
+            <div className="flex items-center gap-2 mt-3">
+              <img
+                src={p.user.image || "/default-avatar.png"}
+                className="w-6 h-6 rounded-full"
+                alt={p.user.name || "Maker"}
+              />
+              <span className="text-xs text-gray-500">{p.user.name}</span>
+            </div>
+
+            <div className="flex items-center gap-4 mt-3 text-sm">
+              {/* BOTÃO DE UPVOTE */}
+              <button
+                onClick={() => toggleVote(p.id)}
+                className={`px-3 py-1 rounded-lg border font-medium transition
+                  ${
+                    userHasVoted
+                      ? "bg-red-500 text-white border-red-600"
+                      : "bg-gray-100 text-gray-700 border-gray-300"
+                  }
+                `}
+              >
+                👍 {p.votes.length}
+              </button>
+
+              <span className="text-gray-500">💬 {p.comments.length}</span>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}

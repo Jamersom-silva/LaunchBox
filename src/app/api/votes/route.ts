@@ -19,7 +19,7 @@ export async function POST(req: Request) {
   const user = await prisma.user.findUnique({ where: { email: session.user.email } });
   if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });
 
-  // tenta criar voto (a constraint @@unique previne duplicados)
+
   try {
     const vote = await prisma.vote.create({
       data: {
@@ -29,7 +29,7 @@ export async function POST(req: Request) {
     });
     return NextResponse.json(vote);
   } catch (err) {
-    // se já votou, retorna conflito ou pega o existente
+    
     return NextResponse.json({ error: "You already voted" }, { status: 409 });
   }
 }

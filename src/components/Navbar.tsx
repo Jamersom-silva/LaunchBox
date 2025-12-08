@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { FiSearch } from "react-icons/fi";
+import UserMenu from "./UserMenu"; // ← IMPORT CORRETO
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
@@ -42,8 +43,8 @@ export default function Navbar() {
             Submit
           </button>
 
-          {/* USER AVATAR */}
-          <div className="w-10 h-10 rounded-full bg-gray-200 border shadow-inner" />
+          {/* USER MENU / LOGIN BUTTON */}
+          <UserMenu />  {/* ← AQUI ENTRA O LOGIN DO NEXTAUTH */}
         </div>
 
         {/* MOBILE MENU BUTTON */}
@@ -77,8 +78,8 @@ export default function Navbar() {
             Submit
           </button>
 
-          {/* USER AVATAR MOBILE */}
-          <div className="w-10 h-10 rounded-full bg-gray-200 border shadow-inner" />
+          {/* USER MENU MOBILE */}
+          <UserMenu />  {/* ← FUNCIONA NO MOBILE TAMBÉM */}
         </div>
       )}
     </header>

@@ -1,52 +1,50 @@
+// src/app/api/products/route.ts
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { auth } from "@/lib/auth";
 
-// GET all products
 export async function GET() {
-  const products = await prisma.product.findMany({
-    orderBy: { createdAt: "desc" },
-    include: {
-      user: {
-        select: { id: true, name: true, image: true },
-      },
-      _count: {
-        select: { votes: true, comments: true },
-      },
-    },
-  });
-
-  return NextResponse.json(products);
-}
-
-// CREATE product
-export async function POST(request: Request) {
   try {
-    const body = await request.json();
-    const { name, slogan, description, image, url, tags, userId } = body;
-
-    if (!name || !slogan || !description || !userId) {
-      return NextResponse.json(
-        { error: "Missing required fields" },
-        { status: 400 }
-      );
-    }
-
-    const product = await prisma.product.create({
-      data: {
-        name,
-        slogan,
-        description,
-        image,
-        url,
-        tags, // deve ser string
-        user: { connect: { id: userId } },
+    const products = await prisma.product.findMany({
+      orderBy: { createdAt: "desc" },
+      include: {
+        user: true,
+        votes: true,
+        comments: true,
       },
     });
 
-    return NextResponse.json(product, { status: 201 });
-
+    return NextResponse.json(products);
   } catch (err) {
-    console.error(err);
-    return NextResponse.json({ error: "Server error" }, { status: 500 });
+    console.error("GET /products error:", err);
+    return NextResponse.json({ error: "Internal error" }, { status: 500 });
+  }
+}
+
+export async function POST(req: Request) {
+  try {
+    const session = await auth();
+    if (!session || !session.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const body = await req.json();
+
+    const product = await prisma.product.create({
+      data: {
+        name: body.name,
+        slogan: body.slogan,
+        description: body.description,
+        image: body.image ?? null,
+        url: body.url ?? null,
+        tags: body.tags ?? "",
+        userId: session.user.id,
+      },
+    });
+
+    return NextResponse.json({ product }, { status: 201 });
+  } catch (err) {
+    console.error("POST /products error:", err);
+    return NextResponse.json({ error: "Internal error" }, { status: 500 });
   }
 }

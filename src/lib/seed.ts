@@ -17,10 +17,10 @@ async function main() {
     data: [
       {
         name: "Taskade",
-        slogan: "taskade", // seu schema usa 'slogan', não slug
+        slogan: "taskade", 
         description: "Build a second brain for your team.",
         image: "https://via.placeholder.com/600x400",
-        tags: ["AI", "Team"].join(","), // ← corrigido
+        tags: ["AI", "Team"].join(","), 
         url: "",
         userId: user.id,
       },
@@ -29,7 +29,7 @@ async function main() {
         slogan: "framer",
         description: "Design stunning interactive products.",
         image: "https://via.placeholder.com/600x400",
-        tags: ["Design"].join(","), // ← corrigido
+        tags: ["Design"].join(","), 
         url: "",
         userId: user.id,
       },
