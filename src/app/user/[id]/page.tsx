@@ -6,9 +6,9 @@ import { notFound } from "next/navigation";
 export default async function UserProfile({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: { id: string };
 }) {
-  const { id } = await params;
+  const { id } = params;
 
   const user = await prisma.user.findUnique({
     where: { id },
@@ -51,7 +51,9 @@ export default async function UserProfile({
         <h2 className="text-xl font-semibold mb-4">Products by this Maker</h2>
 
         {user.products.length === 0 && (
-          <p className="text-gray-600 text-sm">This user hasn't posted any products yet.</p>
+          <p className="text-gray-600 text-sm">
+            This user hasn't posted any products yet.
+          </p>
         )}
 
         <div className="grid gap-4">

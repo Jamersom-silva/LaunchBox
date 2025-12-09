@@ -1,8 +1,10 @@
 "use client";
 
+import SkeletonProduct from "./SkeletonProduct";
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import Link from "next/link"; // ← IMPORT NECESSÁRIO
+import { useSearchParams } from "next/navigation";
+import Link from "next/link";
 
 // Tipagem correta considerando makers
 type Product = {
@@ -22,19 +24,30 @@ type Product = {
 
 export default function ProductList() {
   const { data: session } = useSession();
+  const params = useSearchParams();
+  const category = params.get("category");
 
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // -----------------------------------
+  //  LOAD PRODUCTS WITH CATEGORY FILTER
+  // -----------------------------------
   useEffect(() => {
     async function load() {
-      const res = await fetch("/api/products");
+      setLoading(true);
+
+      const url = "/api/products" + (category ? `?category=${category}` : "");
+
+      const res = await fetch(url);
       const data = await res.json();
+
       setProducts(data);
       setLoading(false);
     }
+
     load();
-  }, []);
+  }, [category]);
 
   // -----------------------------------
   // Toggle Upvote
@@ -52,6 +65,7 @@ export default function ProductList() {
     const data = await res.json();
     if (!data.success) return;
 
+    // Atualização otimista
     setProducts((prev) =>
       prev.map((p) =>
         p.id === productId
@@ -67,8 +81,21 @@ export default function ProductList() {
     );
   }
 
-  if (loading) return <p>Loading...</p>;
+  // -----------------------------------
+  // LOADING SKELETON
+  // -----------------------------------
+  if (loading)
+    return (
+      <div className="grid gap-4 mt-6">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <SkeletonProduct key={i} />
+        ))}
+      </div>
+    );
 
+  // -----------------------------------
+  // RENDER PRODUCTS
+  // -----------------------------------
   return (
     <div className="grid gap-4 mt-6">
       {products.map((p) => {

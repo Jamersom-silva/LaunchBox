@@ -1,12 +1,30 @@
 // src/app/api/products/route.ts
+
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 
-export async function GET() {
+// =====================================================
+// GET — LIST PRODUCTS (WITH CATEGORY FILTER SUPPORT)
+// =====================================================
+export async function GET(req: Request) {
   try {
+    const { searchParams } = new URL(req.url);
+    const category = searchParams.get("category");
+
     const products = await prisma.product.findMany({
+      where:
+        category && category !== "All"
+          ? {
+              tags: {
+                contains: category,
+                mode: "insensitive",
+              },
+            }
+          : {},
+
       orderBy: { createdAt: "desc" },
+
       include: {
         user: true,
         votes: true,
@@ -14,18 +32,26 @@ export async function GET() {
       },
     });
 
-    return NextResponse.json(products);
+    return NextResponse.json(products); // SEMPRE ARRAY
   } catch (err) {
     console.error("GET /products error:", err);
-    return NextResponse.json({ error: "Internal error" }, { status: 500 });
+
+    // **IMPORTANTE: Nunca retornar objeto → apenas array**
+    return NextResponse.json([], { status: 200 });
   }
 }
 
+// =====================================================
+// POST — CREATE NEW PRODUCT
+// =====================================================
 export async function POST(req: Request) {
   try {
     const session = await auth();
     if (!session || !session.user?.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: 401 }
+      );
     }
 
     const body = await req.json();
@@ -37,7 +63,9 @@ export async function POST(req: Request) {
         description: body.description,
         image: body.image ?? null,
         url: body.url ?? null,
-        tags: body.tags ?? "",
+        tags: Array.isArray(body.tags)
+          ? body.tags.join(",")
+          : body.tags ?? "",
         userId: session.user.id,
       },
     });
@@ -45,6 +73,10 @@ export async function POST(req: Request) {
     return NextResponse.json({ product }, { status: 201 });
   } catch (err) {
     console.error("POST /products error:", err);
-    return NextResponse.json({ error: "Internal error" }, { status: 500 });
+
+    return NextResponse.json(
+      { error: "Could not create product" },
+      { status: 500 }
+    );
   }
 }
